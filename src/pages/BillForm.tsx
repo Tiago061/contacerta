@@ -1,3 +1,4 @@
+import { createId } from "../utils/compat";
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, Check, Bell } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -15,7 +16,7 @@ export default function BillForm() {
   const [form, setForm] = useState<Bill>(
     () =>
       existing ?? {
-        id: crypto.randomUUID(),
+        id: createId(),
         name: "",
         amount: 0,
         category: "Outros",

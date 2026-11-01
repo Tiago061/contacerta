@@ -1,3 +1,4 @@
+import { createId, cloneRecord } from "../utils/compat";
 import { categories, type Bill, type Data, type Occurrence } from "../types";
 import { fromLocal, localDate, validDate } from "../utils/dates";
 export const emptyData = (): Data => ({
@@ -24,7 +25,7 @@ export function registerPayment(
     payments: [
       ...data.payments,
       {
-        id: crypto.randomUUID(),
+        id: createId(),
         occurrenceId,
         paidAt,
         amount: occurrence.amount,
@@ -167,7 +168,7 @@ export function validateBackup(value: unknown): Data {
     typeof d.settings.demo !== "boolean"
   )
     fail();
-  return structuredClone(d);
+  return cloneRecord(d);
 }
 export function demoData(): Data {
   const now = new Date(),
@@ -205,7 +206,7 @@ export function demoData(): Data {
         ["demo-0", "demo-1", "demo-2"].includes(o.billId),
     )
     .map((o) => ({
-      id: crypto.randomUUID(),
+      id: createId(),
       occurrenceId: o.id,
       paidAt: o.dueDate,
       amount: o.amount,

@@ -4,7 +4,7 @@ Aplicação web mobile-first em português brasileiro para contas, recorrências
 
 ## Executar
 
-Requer Node.js 22 ou superior.
+Requer Node.js 22 ou superior. Para Android, use JDK 21 e Android SDK 35. No Android Studio, selecione JDK 21 em Settings → Build Tools → Gradle → Gradle JDK.
 
 ```sh
 cd /Users/apps/brotar-frontend/contacerta
@@ -44,18 +44,17 @@ Backups são validados por versão, referências, datas, valores e unicidade. Im
 
 ## Android e iOS com Capacitor
 
-Os módulos e a configuração Capacitor estão incluídos. Os projetos nativos devem ser gerados no ambiente de desenvolvimento com Android Studio e/ou Xcode:
+O projeto Android Capacitor já está incluído em `android/`. Ele carrega os arquivos web empacotados, sem depender da Netlify para abrir. Abra **esta pasta android** no Android Studio, em vez do projeto separado `AndroidStudioProjects/contacertaapp`, que apenas carrega uma URL remota.
+
+Para preparar o Android:
 
 ```sh
 npm run build
-npx cap add android
-npx cap add ios
-npm run cap:sync
+npx cap sync android
 npx cap open android
-npx cap open ios
 ```
 
-Execute `cap add` apenas uma vez por plataforma. Depois de alterações web, use `npm run cap:sync`. Não há servidor remoto na configuração nativa: os arquivos de `dist/` são empacotados no app.
+Para gerar iOS no macOS com Xcode, execute `npx cap add ios`, `npm run cap:sync` e `npx cap open ios`. Execute `cap add` apenas uma vez por plataforma. Depois de alterações web, use `npm run cap:sync`. Não há servidor remoto na configuração nativa: os arquivos de `dist/` são empacotados no app.
 
 Para iOS, inclua `native/PrivacyInfo.xcprivacy` nos recursos do target App no Xcode. O arquivo declara o motivo de acesso a timestamps exigido pelo plugin Filesystem. Verifique também os manifests de privacidade fornecidos pelos plugins ao preparar a distribuição.
 
@@ -63,10 +62,20 @@ Notificações são solicitadas apenas ao ativar Lembretes em Ajustes. O plugin 
 
 O backup nativo usa o diretório de cache privado e a folha de compartilhamento do aparelho; não requer acesso amplo aos arquivos. O seletor de importação usa o input de arquivo nativo da WebView.
 
-O build web e os fluxos no navegador foram verificados. APK/IPA, assinatura, envio às lojas e comportamento real dos plugins em aparelhos não foram executados nesta entrega.
+O build web e os fluxos no navegador foram verificados. O projeto Android inclui os plugins de armazenamento de arquivos, compartilhamento e notificações. Um APK de depuração pode ser gerado em `android/` com `./gradlew assembleDebug`; o arquivo será criado em `android/app/build/outputs/apk/debug/app-debug.apk`. Assinatura de produção, IPA e envio às lojas não estão incluídos.
 
 ## Verificação
 
 Os testes cobrem centavos, datas locais, recorrências semanais/mensais/anuais, fim de mês e ano bissexto, geração idempotente, edição de ciclos pagos, pagamento repetido, estorno, validação de backup, persistência e gravações concorrentes. Foram inspecionados layouts de celular e desktop, temas claro/escuro, formulário de edição, registro/estorno e seleção no calendário.
 
 Dados ficam no armazenamento do navegador/aplicativo. Limpar esse armazenamento ou desinstalar pode removê-los: o backup JSON é o mecanismo de portabilidade desta versão.
+
+## Compatibilidade com WebViews antigas
+
+IDs usam `crypto.getRandomValues` para gerar UUID v4, sem exigir `crypto.randomUUID`. Os backups contêm apenas dados JSON e são clonados sem exigir `structuredClone`. Isso atende ao Android 11 com WebView 91 usado no emulador. Há fallbacks de altura e fundo para recursos CSS recentes.
+
+## Verificação Android
+
+APK de depuração compilado e instalado no emulador Pixel 5, Android 11 (API 30), WebView 91. A tela inicial e a navegação para o calendário foram verificadas com os arquivos locais do Capacitor em `https://localhost`, sem carregar a Netlify. Os 13 testes automatizados de domínio, persistência e compatibilidade passaram. A entrega valida a abertura do aplicativo e a navegação; notificações em segundo plano e a folha de compartilhamento não foram verificadas em aparelho físico.
+
+O pacote nativo é `app.contacerta.mobile` e aparece como **ContaCerta**, com ícone azul de confirmação. O projeto anterior `com.app.contacertaapp` continua sendo um aplicativo separado.

@@ -154,6 +154,7 @@ small {
 }
 .app-shell {
   display: flex;
+  min-height: 100vh;
   min-height: 100dvh;
 }
 .sidebar {
@@ -1418,6 +1419,7 @@ dialog {
   width: calc(100% - 32px);
   max-width: 450px;
   box-shadow: 0 25px 80px #0002;
+  max-height: 85vh;
   max-height: 85dvh;
   overflow: auto;
 }
@@ -1865,6 +1867,7 @@ dialog::backdrop {
     left: 0;
     right: 0;
     z-index: 30;
+    background: var(--card);
     background: color-mix(in srgb, var(--card) 92%, transparent);
     backdrop-filter: blur(20px);
     border-top: 1px solid var(--line);
@@ -2028,6 +2031,7 @@ dialog::backdrop {
   }
   dialog {
     padding: 22px;
+    max-height: 85vh;
     max-height: 85dvh;
   }
   .modal-actions > * {
